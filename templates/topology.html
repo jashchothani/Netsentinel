@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Topology | NetSentinel</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    
+    <style>
+        #network-map {
+            width: 100%;
+            height: 600px;
+            background: #0a0c10;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            margin-top: 20px;
+        }
+        .loading-overlay {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--accent-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-layout">
+        
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-shield-halved logo-icon"></i>
+                <h2>NetSentinel</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-label">Main Menu</p>
+                <a href="/dashboard" class="nav-item"><i class="fa-solid fa-table-columns"></i> Command Center</a>
+                <a href="/topology" class="nav-item active"><i class="fa-solid fa-network-wired"></i> Network Topology</a>
+                <a href="/traffic" class="nav-item"><i class="fa-solid fa-wave-square"></i> Traffic Monitor</a>
+                
+                <p class="nav-label">Security</p>
+                <a href="/alerts" class="nav-item"><i class="fa-solid fa-user-ninja"></i> IDS Alerts</a>
+                <a href="/ai-threat-engine" class="nav-item"><i class="fa-solid fa-brain"></i> AI Threat Engine</i></a>
+                <a href="/firewall" class="nav-item"><i class="fa-solid fa-fire-extinguisher"></i> Firewall Rules</a>
+                
+                <p class="nav-label">System</p>
+                <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search devices...">
+                </div>
+                
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                    <div class="user-info">
+                        <span class="user-name">{{ username }}</span>
+                        <span class="user-role">System Admin</span>
+                    </div>
+                    <a href="/logout" class="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+                </div>
+            </header>
+
+            <div class="dashboard-content fade-in">
+                <div class="page-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1>Interactive Network Topology</h1>
+                        <p>Real-time visual mapping of all connected devices routing through the gateway.</p>
+                    </div>
+                    <button class="export-btn" onclick="drawNetwork()"><i class="fa-solid fa-arrows-rotate"></i> Re-Scan</button>
+                </div>
+
+                <div style="position: relative;">
+                    <div id="loading" class="loading-overlay">
+                        <i class="fa-solid fa-radar fa-spin" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                        <h3>Mapping Network...</h3>
+                    </div>
+                    <div id="network-map"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function drawNetwork() {
+            document.getElementById('loading').style.display = 'block';
+            
+            fetch('/api/scan')
+                .then(response => response.json())
+                .then(devices => {
+                    document.getElementById('loading').style.display = 'none';
+                    if(devices.error || devices.length === 0) return;
+
+                    let nodesArray = [];
+                    let edgesArray = [];
+                    let routerId = null;
+
+                    // 1. Find the Router first (Usually ends in .1)
+                    const router = devices.find(d => d.type === 'Router' || d.ip.endsWith('.1'));
+                    if (router) {
+                        routerId = router.ip;
+                        nodesArray.push({
+                            id: router.ip,
+                            label: `Gateway\n${router.ip}`,
+                            shape: 'hexagon',
+                            color: { background: '#1a1d2d', border: '#94a3b8' },
+                            font: { color: '#e2e8f0', face: 'Inter' },
+                            size: 30
+                        });
+                    } else {
+                        // Fallback if no router is explicitly found
+                        routerId = 'central_hub';
+                        nodesArray.push({
+                            id: 'central_hub', label: 'Main Network', shape: 'hexagon',
+                            color: { background: '#1a1d2d', border: '#94a3b8' }, font: { color: '#e2e8f0' }, size: 30
+                        });
+                    }
+
+                    // 2. Add all other devices and connect them to the router
+                    devices.forEach(device => {
+                        if (device.ip === routerId) return; // Skip router since we added it
+
+                        // Assign colors based on device type
+                        let bgColor = '#1a1d2d';
+                        let borderColor = '#3b82f6'; // Default Blue for Laptop/PC
+                        
+                        if (device.type === 'Phone/Tablet') borderColor = '#8b5cf6'; // Purple
+                        if (device.type === 'IoT Device') borderColor = '#10b981'; // Green
+                        if (device.status === 'Offline') borderColor = '#ef4444'; // Red
+
+                        nodesArray.push({
+                            id: device.ip,
+                            label: `${device.hostname !== 'Unknown' ? device.hostname : device.vendor}\n${device.ip}`,
+                            shape: 'dot',
+                            color: { background: bgColor, border: borderColor },
+                            font: { color: '#94a3b8', size: 12, face: 'Inter' },
+                            size: 15
+                        });
+
+                        // Draw a line connecting the device to the router
+                        edgesArray.push({
+                            from: routerId,
+                            to: device.ip,
+                            color: { color: 'rgba(59, 130, 246, 0.3)', highlight: '#3b82f6' },
+                            length: 250 // Spacing between nodes
+                        });
+                    });
+
+                    // 3. Render the Graph
+                    const container = document.getElementById('network-map');
+                    const data = {
+                        nodes: new vis.DataSet(nodesArray),
+                        edges: new vis.DataSet(edgesArray)
+                    };
+                    const options = {
+                        physics: {
+                            solver: 'forceAtlas2Based',
+                            forceAtlas2Based: { gravitationalConstant: -50, centralGravity: 0.01, springLength: 200 }
+                        },
+                        interaction: { hover: true, tooltipDelay: 200 }
+                    };
+
+                    new vis.Network(container, data, options);
+                })
+                .catch(err => console.error("Error drawing topology:", err));
+        }
+
+        // Draw the map when the page loads
+        document.addEventListener("DOMContentLoaded", drawNetwork);
+    </script>
+</body>
+</html>

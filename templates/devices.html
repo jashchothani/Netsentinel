@@ -1,0 +1,25 @@
+<h1>Network Devices</h1>
+
+<table>
+
+<tr>
+<th>IP Address</th>
+<th>Hostname</th>
+<th>MAC Address</th>
+<th>Vendor</th>
+<th>Status</th>
+</tr>
+
+{% for d in devices %}
+
+<tr>
+<td>{{d.ip}}</td>
+<td>{{d.hostname}}</td>
+<td>{{d.mac}}</td>
+<td>{{d.vendor}}</td>
+<td>{{d.status}}</td>
+</tr>
+
+{% endfor %}
+
+</table>

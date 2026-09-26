@@ -1,0 +1,21 @@
+# Python runtime files
+__pycache__/
+*.py[cod]
+
+# Local databases and archives
+*.db
+*.sqlite
+*.sqlite3
+*.zip
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Frontend dependencies and build output
+netsentinel/node_modules/
+netsentinel/dist/

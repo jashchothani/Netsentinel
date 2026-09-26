@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activate Platform | NetSentinel</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-main: #ffffff;
+            --bg-secondary: #f8fafc;
+            --accent-blue: #2563eb;
+            --accent-light: #eff6ff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* --- CORE ANIMATIONS --- */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes floatDash {
+            0%, 100% { transform: translateY(0) rotateX(10deg) rotateY(-15deg); }
+            50% { transform: translateY(-15px) rotateX(12deg) rotateY(-12deg); }
+        }
+        @keyframes floatItem {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes pulseRing {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        @keyframes dataFlow {
+            0% { transform: translateY(100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100%); opacity: 0; }
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 5%; background: var(--bg-main);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-weight: 800; font-size: 1.5rem; display: flex; align-items: center; gap: 8px; color: #1e3a8a; text-decoration: none; }
+        .logo i { color: var(--accent-blue); }
+        
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { text-decoration: none; color: var(--text-main); font-weight: 500; font-size: 0.95rem; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--accent-blue); }
+        
+        .nav-actions { display: flex; gap: 20px; align-items: center; }
+        .btn-outline { color: var(--accent-blue); text-decoration: none; font-weight: 600; padding: 10px 20px; border: 1px solid var(--accent-blue); border-radius: 6px; transition: 0.3s; }
+        .btn-outline:hover { background: var(--accent-light); }
+
+        /* --- HERO SECTION (Split Layout) --- */
+        .hero {
+            display: flex; align-items: center; justify-content: space-between;
+            max-width: 1300px; margin: 60px auto; padding: 0 5%; gap: 60px;
+        }
+
+        /* LEFT CONTENT */
+        .hero-content { flex: 1; max-width: 550px; }
+        
+        .headline { font-size: 3.2rem; font-weight: 800; line-height: 1.15; color: var(--text-main); margin-bottom: 25px; animation: slideUp 0.8s ease-out forwards; opacity: 0; }
+        .headline span { color: var(--accent-blue); }
+
+        .pricing-block { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; animation: slideUp 0.8s ease-out 0.2s forwards; opacity: 0; }
+        .big-price { font-size: 6.5rem; font-weight: 800; color: var(--text-main); line-height: 1; letter-spacing: -3px; }
+        .price-sub { font-size: 1.1rem; color: var(--text-main); font-weight: 600; line-height: 1.5; }
+        .price-sub span { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+        .fine-print { color: var(--text-muted); font-size: 0.85rem; margin-top: -10px; margin-bottom: 30px; animation: slideUp 0.8s ease-out 0.3s forwards; opacity: 0; }
+
+        .feature-text { font-size: 1.1rem; font-weight: 500; color: var(--text-main); margin-bottom: 25px; animation: slideUp 0.8s ease-out 0.4s forwards; opacity: 0; }
+
+        .cta-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: var(--accent-blue); color: white;
+            padding: 16px 35px; border-radius: 8px;
+            font-size: 1.1rem; font-weight: 700; text-decoration: none;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+            animation: slideUp 0.8s ease-out 0.5s forwards; opacity: 0;
+        }
+        .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4); }
+
+        /* Secondary Enterprise Box */
+        .enterprise-box {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            padding: 20px 25px; border-radius: 12px; margin-top: 50px;
+            animation: slideUp 0.8s ease-out 0.6s forwards; opacity: 0;
+        }
+        .enterprise-box p { font-size: 0.95rem; font-weight: 500; color: var(--text-main); }
+        .btn-small { background: white; border: 1px solid var(--border-color); color: var(--accent-blue); padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-small:hover { border-color: var(--accent-blue); }
+
+        /* --- RIGHT VISUAL (CSS Animation Art) --- */
+        .hero-visual { flex: 1; position: relative; height: 600px; display: flex; justify-content: center; align-items: center; perspective: 1000px; animation: slideUp 1s ease-out 0.3s forwards; opacity: 0; }
+        
+        /* Background Glow */
+        .glow-blob { position: absolute; width: 400px; height: 400px; background: radial-gradient(circle, rgba(219,234,254,0.8) 0%, rgba(255,255,255,0) 70%); z-index: 0; }
+
+        /* The Main 3D Dashboard */
+        .css-dashboard {
+            position: relative; width: 340px; height: 500px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid white; border-radius: 24px;
+            box-shadow: -20px 30px 60px rgba(15, 23, 42, 0.1), inset 0 0 0 1px var(--border-color);
+            z-index: 2; padding: 20px;
+            transform-style: preserve-3d;
+            animation: floatDash 8s ease-in-out infinite;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Dashboard Internal Elements */
+        .dash-header { height: 40px; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; padding: 0 15px; }
+        .dash-header::before { content: ''; width: 40px; height: 12px; background: var(--border-color); border-radius: 10px; }
+        
+        .dash-chart { height: 120px; background: linear-gradient(180deg, var(--accent-light) 0%, transparent 100%); border-radius: 12px; border: 1px solid var(--accent-light); margin-bottom: 20px; position: relative; overflow: hidden; }
+        .dash-line { position: absolute; bottom: 20px; left: 0; width: 100%; height: 2px; background: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); }
+        
+        .dash-card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .dash-icon { width: 40px; height: 40px; border-radius: 8px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .dash-icon.alert { background: #fee2e2; color: #ef4444; }
+        .dash-text { flex: 1; height: 10px; background: var(--bg-secondary); border-radius: 10px; position: relative; overflow: hidden; }
+        .dash-text::after { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 60%; background: var(--border-color); border-radius: 10px; }
+
+        .dash-button { position: absolute; bottom: 20px; left: 20px; right: 20px; height: 50px; background: var(--accent-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4); }
+
+        /* Floating Exterior Elements */
+        .float-obj { position: absolute; background: white; border-radius: 16px; padding: 15px; box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; z-index: 3; }
+        
+        .obj-1 { top: 80px; left: -30px; animation: floatItem 5s ease-in-out infinite; font-size: 2rem; color: #f59e0b; width: 70px; height: 70px; }
+        .obj-2 { bottom: 120px; right: -40px; animation: floatItem 7s ease-in-out infinite reverse; font-size: 2rem; color: #10b981; width: 80px; height: 80px; }
+        
+        .obj-3 { top: 250px; left: -60px; background: var(--text-main); color: white; padding: 10px 20px; border-radius: 30px; font-weight: 600; font-size: 0.9rem; animation: floatItem 6s ease-in-out infinite 1s; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+
+        /* Decorative animated data lines */
+        .data-stream { position: absolute; top: 0; right: 40px; width: 2px; height: 100%; background: rgba(37, 99, 235, 0.1); z-index: 1; }
+        .data-packet { position: absolute; width: 6px; height: 20px; background: var(--accent-blue); border-radius: 10px; left: -2px; animation: dataFlow 3s linear infinite; box-shadow: 0 0 10px var(--accent-blue); }
+
+        /* Responsive */
+        @media (max-width: 950px) {
+            .hero { flex-direction: column; text-align: center; }
+            .hero-content { align-items: center; display: flex; flex-direction: column; }
+            .pricing-block { justify-content: center; }
+            .enterprise-box { flex-direction: column; gap: 15px; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="logo">
+            <i class="fa-solid fa-shield-halved"></i> NetSentinel
+        </a>
+        
+        <nav class="nav-links">
+            <a href="/">Home</a>
+            <a href="/#features">Features</a>
+            <a href="/#how-it-works">How It Works</a>
+            <a href="#" style="color: var(--accent-blue);">Pricing</a>
+        </nav>
+
+        <div class="nav-actions">
+            <a href="/login" style="color: var(--text-main); font-weight: 600; text-decoration: none;">Log In</a>
+            <a href="/register" class="btn-outline">Sign Up <i class="fa-solid fa-arrow-right" style="margin-left: 5px; font-size: 0.8rem;"></i></a>
+        </div>
+    </header>
+
+    <section class="hero">
+        
+        <div class="hero-content">
+            <h1 class="headline">Start securing your network at just</h1>
+            
+            <div class="pricing-block">
+                <div class="big-price">₹99</div>
+                <div class="price-sub">
+                    Applicable on all networks<br>
+                    <span>(Platform fee)* <i class="fa-regular fa-circle-question" style="font-size: 0.8rem; margin-left: 3px;"></i></span>
+                </div>
+            </div>
+            
+            <div class="fine-print">*Inclusive of all taxes. No hidden charges.</div>
+
+            <p class="feature-text">Get Custom AI Threat Reports and Active Firewall Defense at no additional cost.</p>
+
+            <a href="/payment?amount=99&days=30" class="cta-btn">
+                Initialize Platform <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+            <div class="enterprise-box">
+                <p>Have an enterprise network with more than 50 active devices?</p>
+                <a href="/resources" class="btn-small">
+                    <i class="fa-solid fa-headset"></i> Contact Sales
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="glow-blob"></div>
+            
+            <div class="data-stream" style="right: 80px;"><div class="data-packet"></div></div>
+            <div class="data-stream" style="right: 140px;"><div class="data-packet" style="animation-delay: 1.5s; background: #10b981;"></div></div>
+
+            <div class="css-dashboard">
+                <div class="dash-header"></div>
+                
+                <div class="dash-chart">
+                    <div class="dash-line"></div>
+                </div>
+
+                <div class="dash-card">
+                    <div class="dash-icon"><i class="fa-solid fa-check"></i></div>
+                    <div class="dash-text"></div>
+                </div>
+
+                <div class="dash-card">
+                    <div class="dash-icon alert"><i class="fa-solid fa-shield-virus"></i></div>
+                    <div class="dash-text" style="width: 80%;"></div>
+                </div>
+
+                <div class="dash-button">
+                    PAY ₹99
+                </div>
+            </div>
+
+            <div class="float-obj obj-1"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="float-obj obj-2"><i class="fa-solid fa-network-wired"></i></div>
+            <div class="float-obj obj-3"><i class="fa-solid fa-lock" style="margin-right: 8px;"></i> Secured</div>
+
+        </div>
+
+    </section>
+
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upgrade | NetSentinel</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #05070d;
+        color: white;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    .checkout-box {
+        background: #0a0c10;
+        border: 1px solid #1f2937;
+        border-radius: 16px;
+        padding: 40px;
+        width: 100%;
+        max-width: 420px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+        from {opacity:0; transform: translateY(20px);}
+        to {opacity:1; transform: translateY(0);}
+    }
+
+    .qr-box {
+        width: 200px;
+        height: 200px;
+        background: white;
+        border-radius: 12px;
+        margin: 25px auto;
+        padding: 10px;
+        border: 2px dashed #4b5563;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .qr-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .amount-display {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 10px 0;
+        color: #60a5fa; /* Light blue accent */
+    }
+
+    /* CRITICAL: The warning box for the Penny Drop system */
+    .exact-amount-warning {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #f87171;
+        padding: 12px 15px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 20px 0;
+        line-height: 1.5;
+    }
+
+    .pay-btn {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 16px;
+        width: 100%;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .pay-btn:hover {
+        background: #1d4ed8;
+        transform: translateY(-2px);
+    }
+
+    .pay-btn:disabled {
+        background: #374151;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .status {
+        margin-top: 20px;
+        padding: 12px;
+        border-radius: 8px;
+        display: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .status.checking {
+        display: block;
+        background: rgba(234,179,8,0.1);
+        color: #facc15;
+        border: 1px solid rgba(234,179,8,0.3);
+        animation: pulse 1.5s infinite;
+    }
+
+    .status.success {
+        display: block;
+        background: rgba(16,185,129,0.1);
+        color: #10b981;
+        border: 1px solid rgba(16,185,129,0.3);
+        animation: none;
+    }
+
+    @keyframes pulse {
+        0% {opacity: 0.6;}
+        50% {opacity: 1;}
+        100% {opacity: 0.6;}
+    }
+</style>
+</head>
+
+<body>
+
+<div class="checkout-box">
+
+    <h2 style="margin-top: 0;"><i class="fa-solid fa-shield-halved" style="color: #60a5fa;"></i> NetSentinel Pro</h2>
+    <p style="color:#9ca3af; font-size: 0.95rem;">Secure Upgrade via UPI</p>
+
+    <div class="qr-box">
+        <img src="{{ qr_path }}" alt="Scan to Pay">
+    </div>
+
+    <div class="amount-display">₹{{ amount }}</div>
+
+    <div class="exact-amount-warning">
+        <i class="fa-solid fa-triangle-exclamation"></i> 
+        Important: You MUST pay the exact amount including decimals to activate your account.
+    </div>
+
+    <p style="color:#9ca3af; font-size: 0.9rem; margin-bottom: 20px;">
+        Scan the QR using any UPI app.
+    </p>
+
+    <button onclick="startVerification()" id="pay-btn" class="pay-btn">
+        <i class="fa-solid fa-lock"></i> I Have Paid ₹{{ amount }}
+    </button>
+
+    <div id="status"></div>
+
+</div>
+
+<script>
+    let checking = false;
+    let pollInterval;
+
+    function startVerification() {
+        if (checking) return;
+        checking = true;
+
+        // Disable button to prevent spam clicks
+        let btn = document.getElementById("pay-btn");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...';
+
+        let statusDiv = document.getElementById("status");
+        statusDiv.innerHTML = "⏳ Checking bank receipts...";
+        statusDiv.className = "status checking";
+
+        // Check immediately once
+        checkPayment();
+
+        // Then check every 12 seconds
+        pollInterval = setInterval(checkPayment, 12000); 
+    }
+
+    function checkPayment() {
+        fetch("/api/check-payment", { method: "POST" })
+        .then(res => res.json())
+        .then(data => {
+            if (data.verified) {
+                // STOP THE LOOP
+                clearInterval(pollInterval); 
+                
+                let statusDiv = document.getElementById("status");
+                statusDiv.innerHTML = "<i class='fa-solid fa-check-double'></i> Payment Verified! Redirecting...";
+                statusDiv.className = "status success";
+
+                setTimeout(() => {
+                    window.location.href = "/dashboard";
+                }, 1500);
+            }
+        })
+        .catch(err => {
+            console.error("Network error, will try again next cycle.");
+        });
+    }
+</script>
+
+</body>
+</html>

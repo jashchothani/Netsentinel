@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources & Legal | NetSentinel</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --accent-blue: #2563eb;
+            --accent-light: #eff6ff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            display: flex; justify-content: space-between; padding: 20px 5%; align-items: center;
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color);
+        }
+        .logo { font-weight: 800; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; color: var(--text-main); text-decoration: none; }
+        .logo i { color: var(--accent-blue); }
+        .nav-actions a { text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+
+        /* Layout */
+        .resource-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: flex-start;
+            gap: 40px;
+            padding: 40px 20px;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            position: sticky;
+            top: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            text-align: left;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .tab-btn:hover { background: var(--border-color); color: var(--text-main); }
+        .tab-btn.active { background: var(--accent-light); color: var(--accent-blue); }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+            min-height: 500px;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .content-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography inside content */
+        .content-section h1 { font-size: 2.2rem; margin-bottom: 10px; color: var(--text-main); letter-spacing: -0.5px; }
+        .content-section h2 { font-size: 1.4rem; margin: 30px 0 15px; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .content-section p { font-size: 1.05rem; line-height: 1.7; color: var(--text-muted); margin-bottom: 20px; }
+        .content-section ul { margin-bottom: 20px; padding-left: 20px; color: var(--text-muted); line-height: 1.7; }
+        .content-section li { margin-bottom: 10px; }
+
+        /* Contact Form Styles */
+        .contact-form { display: flex; flex-direction: column; gap: 20px; max-width: 500px; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        .input-group label { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
+        .input-group input, .input-group textarea { padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 1rem; outline: none; transition: 0.3s; }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px var(--accent-light); }
+        .submit-btn { background: var(--accent-blue); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .submit-btn:hover { background: #1d4ed8; transform: translateY(-2px); }
+
+        @media (max-width: 800px) {
+            .resource-container { flex-direction: column; }
+            .sidebar { width: 100%; position: relative; top: 0; flex-direction: row; overflow-x: auto; padding-bottom: 10px; }
+            .tab-btn { white-space: nowrap; }
+            .content-area { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="logo">
+            <i class="fa-solid fa-shield-halved"></i> NetSentinel
+        </a>
+        <div class="nav-actions">
+            <a href="/login" style="color: var(--accent-blue); text-decoration: none; font-weight: 600;">Go to Dashboard <i class="fa-solid fa-arrow-right" style="margin-left: 5px;"></i></a>
+        </div>
+    </header>
+
+    <div class="resource-container">
+        
+        <aside class="sidebar">
+            <button class="tab-btn active" onclick="switchTab('docs')"><i class="fa-solid fa-book"></i> Documentation</button>
+            <button class="tab-btn" onclick="switchTab('privacy')"><i class="fa-solid fa-shield-check"></i> Privacy Policy</button>
+            <button class="tab-btn" onclick="switchTab('terms')"><i class="fa-solid fa-file-contract"></i> Terms of Service</button>
+            <button class="tab-btn" onclick="switchTab('contact')"><i class="fa-solid fa-envelope"></i> Contact Us</button>
+        </aside>
+
+        <main class="content-area">
+
+            <section id="docs" class="content-section active">
+                <h1>Documentation</h1>
+                <p>Welcome to the NetSentinel official documentation. Learn how to deploy and configure your local security node.</p>
+
+                <h2>Getting Started</h2>
+                <p>NetSentinel operates as a localized Flask application. To begin monitoring your network:</p>
+                <ul>
+                    <li>Install the required dependencies via <code>pip install -r requirements.txt</code></li>
+                    <li>Ensure you have Npcap (Windows) or libpcap (Linux) installed for packet sniffing.</li>
+                    <li>Run <code>python app.py</code> to boot the local server.</li>
+                </ul>
+
+                <h2>The AI Threat Engine</h2>
+                <p>The AI Engine analyzes live packet statistics without sending sensitive payloads to external servers. It looks for anomalies in:</p>
+                <ul>
+                    <li>Unusual port scanning activity (Nmap signatures).</li>
+                    <li>High-frequency outbound data transfers (Potential exfiltration).</li>
+                    <li>Known malicious MAC OUI vendor signatures.</li>
+                </ul>
+
+                <h2>Active Firewall Integration</h2>
+                <p>When you click "Block IP" in the dashboard, NetSentinel interfaces directly with the Windows Defender Firewall via PowerShell commands to instantly drop all incoming and outgoing packets to that address.</p>
+            </section>
+
+            <section id="privacy" class="content-section">
+                <h1>Privacy Policy</h1>
+                <p>Last Updated: March 2026</p>
+
+                <h2>1. Data We Do Not Collect</h2>
+                <p>NetSentinel is a localized security tool. We <strong>do not</strong> collect, read, or transmit the payloads of your network packets. Your private data (passwords, messages, browser history) never leaves your local machine.</p>
+
+                <h2>2. Data We Process Locally</h2>
+                <p>To provide security alerts, the software processes metadata on your local machine, including:</p>
+                <ul>
+                    <li>IP Addresses and MAC Addresses on your network.</li>
+                    <li>Packet headers (Source, Destination, Port, Protocol).</li>
+                    <li>Bandwidth usage statistics.</li>
+                </ul>
+
+                <h2>3. Account Information</h2>
+                <p>When you register for platform access, we collect your email address for authentication and receipt verification purposes. We do not sell your email address to third parties.</p>
+            </section>
+
+            <section id="terms" class="content-section">
+                <h1>Terms of Service</h1>
+                <p>By accessing the NetSentinel platform, you agree to be bound by these terms.</p>
+
+                <h2>1. Acceptable Use</h2>
+                <p>NetSentinel is a defensive security tool designed for networks you own or have explicit authorization to monitor. You agree not to use this software for malicious reconnaissance, unauthorized sniffing, or offensive cyber operations.</p>
+
+                <h2>2. Platform Access Fee</h2>
+                <p>Access to the NetSentinel dashboard requires a non-refundable platform fee (₹99). This fee provisions your account and grants access to the AI Threat Engine and active response features.</p>
+
+                <h2>3. Limitation of Liability</h2>
+                <p>While NetSentinel provides robust threat detection, no security product is 100% impenetrable. We are not liable for any data breaches, network downtime, or damages resulting from the use or inability to use this software.</p>
+            </section>
+
+            <section id="contact" class="content-section">
+                <h1>Contact Support</h1>
+                <p>Need help with your platform activation or experiencing a technical issue? Send us a message.</p>
+
+                <div style="background: var(--bg-light); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; margin-bottom: 30px; display: flex; gap: 20px;">
+                    <div><i class="fa-solid fa-envelope" style="color: var(--accent-blue); font-size: 1.5rem;"></i></div>
+                    <div>
+                        <h3 style="margin: 0 0 5px; font-size: 1rem; color: var(--text-main);">Direct Email</h3>
+                        <p style="margin: 0; color: var(--text-muted);">support@netsentinel.com</p>
+                    </div>
+                </div>
+
+                <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent successfully! Our team will respond shortly.');">
+                    <div class="input-group">
+                        <label>Your Name</label>
+                        <input type="text" placeholder="John Doe" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Account Email</label>
+                        <input type="email" placeholder="john@example.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>How can we help?</label>
+                        <textarea rows="5" placeholder="Describe your issue..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            // 1. Remove active class from all buttons and sections
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+
+            // 2. Add active class to clicked button
+            event.currentTarget.classList.add('active');
+
+            // 3. Show the corresponding section
+            document.getElementById(tabId).classList.add('active');
+            
+            // 4. Scroll to top of content area smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

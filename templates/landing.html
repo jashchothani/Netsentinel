@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSentinel | Advanced Security Platform</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/animation.js" defer></script>
+</head>
+<body>
+
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <header>
+        <div class="logo">
+            <div class="logo-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            NetSentinel
+        </div>
+
+        <nav>
+            <a href="/" class="nav-link active">Home <span>+</span></a>
+            <a href="#features" class="nav-link">Features <span>+</span></a>
+            <a href="/mannual" class="nav-link">How it Works <span>+</span></a>
+            <a href="/upgrade" class="nav-link">Pricing <span>+</span></a>
+        </nav>
+
+        <div class="nav-actions">
+            <a href="/login" class="login-btn">Login</a>
+            <a href="/register" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;">Get Started</a>
+        </div>
+    </header>
+
+    <section class="hero" style="min-height: 80vh; display: flex; align-items: center; padding-top: 100px;">
+        <div class="hero-text fade-up">
+            <div class="badge" style="background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); padding: 8px 15px; border-radius: 20px; display: inline-block; margin-bottom: 20px; font-size: 0.85rem; font-weight: 600;">
+                <i class="fa-solid fa-bolt"></i> NetSentinel v2.0 is Live
+            </div>
+            <h1 style="font-size: 3.5rem; line-height: 1.2; margin-bottom: 20px;">Absolute Security.<br><span style="color: var(--accent-blue);">Zero Compromise.</span></h1>
+            <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 30px; max-width: 500px;">
+                Deploy enterprise-grade network monitoring in seconds. NetSentinel uses active packet sniffing and AI threat detection to secure your infrastructure.
+            </p>
+            
+            <div class="hero-buttons">
+                <a href="/register" class="btn btn-primary">Start Free Trial</a>
+                <a href="/mannual" class="btn btn-secondary" style="background: transparent; border: 1px solid var(--border-color); color: rgb(105, 0, 174);">
+                    <span class="play-icon"><i class="fa-solid fa-terminal"></i></span> View Live Map
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-image fade-in">
+            <img src="/static/mioffice_animation_mioffice.gif" alt="NetSentinel 3D Dashboard" class="floating-img" id="tilt-image" style="width: 100%; max-width: 600px; border: 0ch;">
+        </div>
+    </section>
+
+    <section class="stats-banner" style="background: var(--panel-bg); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 40px 0;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-around; text-align: center;">
+            <div>
+                <h2 style="font-size: 2.5rem; color: var(--accent-blue);">24/7</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Active Monitoring</p>
+            </div>
+            <div>
+                <h2 style="font-size: 2.5rem; color: var(--accent-green);">1.2M+</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Packets Analyzed</p>
+            </div>
+            <div>
+                <h2 style="font-size: 2.5rem; color: var(--accent-red);">99.9%</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Threats Blocked</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features" style="padding: 100px 20px; max-width: 1200px; margin: 0 auto;">
+        <div class="section-header fade-up" style="text-align: center; margin-bottom: 60px;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 15px;">We see what others miss.</h2>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">Our intelligent architecture provides complete visibility into every byte traversing your network.</p>
+        </div>
+
+        <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            <div class="card stagger-card" style="background: var(--panel-bg); padding: 40px; border-radius: 16px; border: 1px solid var(--border-color); transition: 0.3s;">
+                <div class="card-icon" style="font-size: 2rem; color: var(--accent-blue); margin-bottom: 20px;"><i class="fa-solid fa-network-wired"></i></div>
+                <h3 style="margin-bottom: 15px; font-size: 1.3rem;">Topology Mapping</h3>
+                <p style="color: var(--text-muted); line-height: 1.6;">Instantly discover all connected devices, their IP addresses, MAC addresses, and vendor details without manual configuration.</p>
+            </div>
+
+            <div class="card stagger-card" style="background: var(--panel-bg); padding: 40px; border-radius: 16px; border: 1px solid var(--border-color); transition: 0.3s;">
+                <div class="card-icon" style="font-size: 2rem; color: var(--accent-red); margin-bottom: 20px;"><i class="fa-solid fa-brain"></i></div>
+                <h3 style="margin-bottom: 15px; font-size: 1.3rem;">AI Threat Engine</h3>
+                <p style="color: var(--text-muted); line-height: 1.6;">Our Machine Learning models evaluate live packet statistics to predict and flag suspicious behavior before a breach occurs.</p>
+            </div>
+
+            <div class="card stagger-card" style="background: var(--panel-bg); padding: 40px; border-radius: 16px; border: 1px solid var(--border-color); transition: 0.3s;">
+                <div class="card-icon" style="font-size: 2rem; color: var(--accent-green); margin-bottom: 20px;"><i class="fa-solid fa-fire-extinguisher"></i></div>
+                <h3 style="margin-bottom: 15px; font-size: 1.3rem;">Active Firewall</h3>
+                <p style="color: var(--text-muted); line-height: 1.6;">Don't just watch threats happen. Instantly sever connections and block malicious IP addresses with one click directly from the dashboard.</p>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 100px 20px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border-color);">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 60px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 400px;" class="fade-up">
+                <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
+                    <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></div>
+                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #f59e0b;"></div>
+                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></div>
+                    </div>
+                    <div style="font-family: monospace; color: var(--accent-green); line-height: 1.8;">
+                        > initialize_scanner()<br>
+                        > sniffing on interface eth0...<br>
+                        > [!] anomaly detected at 192.168.1.104<br>
+                        > protocol: TCP, ports: 4444<br>
+                        > blocking IP via local firewall... <span style="color: white;">SUCCESS</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="flex: 1; min-width: 400px;" class="fade-up">
+                <h2 style="font-size: 2.2rem; margin-bottom: 20px;">Take control with Active Response.</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 1.1rem; line-height: 1.6;">
+                    Passive monitoring is no longer enough. NetSentinel gives you the power to respond to incidents in real-time. 
+                </p>
+                <ul style="list-style: none; color: var(--text-muted); margin-bottom: 30px;">
+                    <li style="margin-bottom: 15px;"><i class="fa-solid fa-check" style="color: var(--accent-green); margin-right: 10px;"></i> Direct Windows Firewall integration</li>
+                    <li style="margin-bottom: 15px;"><i class="fa-solid fa-check" style="color: var(--accent-green); margin-right: 10px;"></i> Live bandwidth speed tracking</li>
+                    <li style="margin-bottom: 15px;"><i class="fa-solid fa-check" style="color: var(--accent-green); margin-right: 10px;"></i> Immutable system logging</li>
+                </ul>
+                <a href="/register" style="color: var(--accent-blue); font-weight: 600; text-decoration: none;">Explore the Dashboard <i class="fa-solid fa-arrow-right" style="margin-left: 5px;"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 100px 20px; text-align: center; max-width: 800px; margin: 0 auto;" class="fade-up">
+        <h2 style="font-size: 3rem; margin-bottom: 20px;">Ready to lock it down?</h2>
+        <p style="color: var(--text-muted); font-size: 1.2rem; margin-bottom: 40px;">
+            Join the professionals who trust NetSentinel to keep their data safe and their networks clean.
+        </p>
+        <a href="/upgrade" class="btn btn-primary" style="padding: 15px 40px; font-size: 1.1rem; border-radius: 8px;">View Pro Pricing</a>
+    </section>
+
+    <footer style="background: var(--panel-bg); border-top: 1px solid var(--border-color); padding: 60px 20px 20px;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 40px;">
+            <div style="margin-bottom: 30px;">
+                <div class="logo" style="font-size: 1.5rem; margin-bottom: 15px;">
+                    <i class="fa-solid fa-shield-halved" style="color: var(--accent-blue);"></i> NetSentinel
+                </div>
+                <p style="color: var(--text-muted); max-width: 300px;">The next generation of localized network security and AI threat analysis.</p>
+            </div>
+            
+            <div style="display: flex; gap: 60px;">
+                <div>
+                    <h4 style="color: white; margin-bottom: 20px;">Product</h4>
+                    <ul style="list-style: none; line-height: 2;">
+                        <li><a href="#features" style="color: var(--text-muted); text-decoration: none;">Features</a></li>
+                        <li><a href="/upgrade" style="color: var(--text-muted); text-decoration: none;">Pricing</a></li>
+                        <li><a href="#" style="color: var(--text-muted); text-decoration: none;">Documentation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: white; margin-bottom: 20px;">Legal</h4>
+                    <ul style="list-style: none; line-height: 2;">
+                        <li><a href="/resources" style="color: var(--text-muted); text-decoration: none;">Privacy Policy</a></li>
+                        <li><a href="/resources" style="color: var(--text-muted); text-decoration: none;">Terms of Service</a></li>
+                        <li><a href="/resources" style="color: var(--text-muted); text-decoration: none;">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; color: #475569; font-size: 0.9rem; padding-top: 20px; border-top: 1px solid var(--border-color);">
+            <p>© 2026 NetSentinel Cyber Security Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html> 

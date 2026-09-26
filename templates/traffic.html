@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Traffic Monitor | NetSentinel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <style>
+        .terminal-box {
+            background: #0a0c10;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+        .packet-row { display: flex; gap: 15px; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
+        .pkt-time { color: var(--text-muted); }
+        .pkt-src { color: var(--accent-blue); }
+        .pkt-dst { color: var(--accent-green); }
+        .pkt-proto { font-weight: bold; width: 60px; }
+        .proto-TCP { color: #3b82f6; }
+        .proto-UDP { color: #8b5cf6; }
+        .proto-DNS { color: #f59e0b; }
+        .proto-HTTP { color: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-shield-halved logo-icon"></i>
+                <h2>NetSentinel</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-label">Main Menu</p>
+                <a href="/dashboard" class="nav-item"><i class="fa-solid fa-table-columns"></i> Command Center</a>
+                <a href="/topology" class="nav-item"><i class="fa-solid fa-network-wired"></i> Network Topology</a>
+                <a href="/traffic" class="nav-item active"><i class="fa-solid fa-wave-square"></i> Traffic Monitor</a>
+                
+                <p class="nav-label">Security</p>
+                <a href="/alerts" class="nav-item"><i class="fa-solid fa-user-ninja"></i> IDS Alerts <span class="badge red" id="sidebar-alert-count">0</span></a>
+                
+                <a href="/ai-threat-engine" class="nav-item">
+                    <i class="fa-solid fa-brain"></i> AI Threat Engine 
+                    
+                </a>
+                <a href="/firewall" class="nav-item"><i class="fa-solid fa-fire-extinguisher"></i> Firewall Rules</a>
+                
+                <a href="#" class="nav-item"><i class="fa-solid fa-ban"></i> Device Control</a>
+
+                <p class="nav-label">System</p>
+                <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search alerts...">
+                </div>
+                <a href="/alerts"><div class="user-profile">
+                    <div class="notifications">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="indicator"></span>
+                    </div></a>
+                    <div class="avatar">
+                        <i class="fa-solid fa-user-astronaut"></i>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name">{{ username }}</span>
+                        <span class="user-role">User</span>
+                    </div>
+                    <a href="/logout" class="logout-btn" title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+                </div>
+            </header>
+            <div class="dashboard-content fade-in">
+                <div class="page-title">
+                    <h1>Live Traffic Analysis</h1>
+                    <p>Real-time packet capture via Scapy engine.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-details"><h3>TCP Packets</h3><h2 id="count-tcp">0</h2></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-details"><h3>UDP Packets</h3><h2 id="count-udp">0</h2></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-details"><h3>DNS Requests</h3><h2 id="count-dns">0</h2></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-details"><h3>HTTP(S) Traffic</h3><h2 id="count-http">0</h2></div>
+                    </div>
+                </div>
+                <div class="panel-header" style="margin-top: 30px;">
+                    <h2>Active Bandwidth Test</h2>
+                    <button id="run-speedtest-btn" class="export-btn" style="background: var(--accent-blue); color: white; border: none;">
+                        <i class="fa-solid fa-gauge-high"></i> Run Speed Test
+                    </button>
+                </div>
+                
+                <div class="stats-grid" style="margin-bottom: 30px;">
+                    <div class="stat-card" style="border-left: 4px solid #f59e0b;">
+                        <div class="stat-details">
+                            <h3 style="color: var(--text-muted);">Latency (Ping)</h3>
+                            <h2 id="st-ping">-- ms</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="border-left: 4px solid var(--accent-green);">
+                        <div class="stat-details">
+                            <h3 style="color: var(--text-muted);">Download Speed</h3>
+                            <h2 id="st-dl">-- Mbps</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="border-left: 4px solid var(--accent-purple);">
+                        <div class="stat-details">
+                            <h3 style="color: var(--text-muted);">Upload Speed</h3>
+                            <h2 id="st-ul">-- Mbps</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-header"><h2>Live Packet Feed</h2></div>
+                <div class="terminal-box" id="live-feed">
+                    </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Poll the server every 1 second for fresh packet data
+        setInterval(() => {
+            fetch('/api/traffic')
+                .then(res => res.json())
+                .then(data => {
+                    // Update the top statistic cards
+                    document.getElementById('count-tcp').innerText = data.stats.TCP;
+                    document.getElementById('count-udp').innerText = data.stats.UDP;
+                    document.getElementById('count-dns').innerText = data.stats.DNS;
+                    document.getElementById('count-http').innerText = data.stats.HTTP;
+
+                    // Update the live terminal feed
+                    const feedBox = document.getElementById('live-feed');
+                    feedBox.innerHTML = ''; 
+                    
+                    data.live_feed.forEach(pkt => {
+                        let protoClass = pkt.protocol === 'HTTP(S)' ? 'proto-HTTP' : `proto-${pkt.protocol}`;
+                        
+                        feedBox.innerHTML += `
+                            <div class="packet-row">
+                                <span class="pkt-time">[${pkt.time}]</span>
+                                <span class="pkt-proto ${protoClass}">${pkt.protocol}</span>
+                                <span>
+                                    <span class="pkt-src">${pkt.src}</span> 
+                                    <i class="fa-solid fa-arrow-right-long" style="color:#475569; margin:0 5px;"></i> 
+                                    <span class="pkt-dst">${pkt.dst}</span>
+                                </span>
+                                <span style="margin-left:auto; color:#64748b;">${pkt.size} bytes</span>
+                            </div>
+                        `;
+                    });
+                });
+        }, 1000); // 1000ms = 1 second
+        // --- SPEED TEST LOGIC ---
+        const speedtestBtn = document.getElementById('run-speedtest-btn');
+        
+        if (speedtestBtn) {
+            speedtestBtn.addEventListener('click', () => {
+                // 1. Set UI to Loading State
+                speedtestBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Testing Connection...';
+                speedtestBtn.disabled = true;
+                speedtestBtn.style.opacity = '0.7';
+                
+                document.getElementById('st-ping').innerHTML = '<i class="fa-solid fa-ellipsis fa-fade" style="font-size: 1rem;"></i>';
+                document.getElementById('st-dl').innerHTML = '<i class="fa-solid fa-ellipsis fa-fade" style="font-size: 1rem;"></i>';
+                document.getElementById('st-ul').innerHTML = '<i class="fa-solid fa-ellipsis fa-fade" style="font-size: 1rem;"></i>';
+
+                // 2. Call the Python API
+                fetch('/api/speedtest')
+                    .then(response => response.json())
+                    .then(data => {
+                        // 3. Update UI with real results
+                        if (data.success) {
+                            document.getElementById('st-ping').innerText = data.ping + ' ms';
+                            document.getElementById('st-dl').innerText = data.download + ' Mbps';
+                            document.getElementById('st-ul').innerText = data.upload + ' Mbps';
+                        } else {
+                            alert("Speed test failed: " + data.error);
+                            document.getElementById('st-ping').innerText = 'Error';
+                            document.getElementById('st-dl').innerText = 'Error';
+                            document.getElementById('st-ul').innerText = 'Error';
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Speedtest error:", err);
+                        alert("Could not connect to the speed test server.");
+                    })
+                    .finally(() => {
+                        // 4. Reset Button
+                        speedtestBtn.innerHTML = '<i class="fa-solid fa-gauge-high"></i> Run Speed Test';
+                        speedtestBtn.disabled = false;
+                        speedtestBtn.style.opacity = '1';
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

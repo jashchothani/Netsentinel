@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Threat Engine | NetSentinel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --card-dark: #18181b;
+            --border-dark: #27272a;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-yellow: #eab308;
+            --accent-red: #ef4444;
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: var(--text-main); }
+        
+        /* Modernized Layout & Cards */
+        .page-title h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 5px; }
+        .page-title p { color: var(--text-muted); font-size: 1rem; }
+        
+        .table-section {
+            background: var(--card-dark);
+            border: 1px solid var(--border-dark);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-top: 20px;
+        }
+
+        .panel-header h2 { font-size: 1.2rem; font-weight: 600; border-bottom: 1px solid var(--border-dark); padding-bottom: 15px; margin-bottom: 15px; }
+
+        /* Sleek Data Table */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        .data-table th { color: var(--text-muted); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; padding: 10px 15px; text-align: left; }
+        .data-table td { padding: 16px 15px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border-dark); border-bottom: 1px solid var(--border-dark); vertical-align: middle; transition: all 0.2s; }
+        
+        /* Rounded row edges */
+        .data-table td:first-child { border-left: 1px solid var(--border-dark); border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .data-table td:last-child { border-right: 1px solid var(--border-dark); border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+        
+        .data-table tr:hover td { background: rgba(255,255,255,0.04); }
+
+        /* Typography */
+        .ip-text { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #60a5fa; font-size: 0.95rem; }
+        .mono-text { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--text-muted); }
+
+        /* Premium Risk Bars */
+        .risk-bar-container { width: 120px; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin-top: 8px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); }
+        .risk-bar { height: 100%; border-radius: 10px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bg-green { background: linear-gradient(90deg, #059669, #10b981); box-shadow: 0 0 10px rgba(16,185,129,0.3); }
+        .bg-yellow { background: linear-gradient(90deg, #ca8a04, #eab308); box-shadow: 0 0 10px rgba(234,179,8,0.3); }
+        .bg-red { background: linear-gradient(90deg, #b91c1c, #ef4444); box-shadow: 0 0 12px rgba(239,68,68,0.5); }
+
+        /* Badges & Pills */
+        .risk-pill { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 8px; }
+        .risk-pill.green { background: rgba(16,185,129,0.1); color: var(--accent-green); border: 1px solid rgba(16,185,129,0.2); }
+        .risk-pill.yellow { background: rgba(234,179,8,0.1); color: var(--accent-yellow); border: 1px solid rgba(234,179,8,0.2); }
+        .risk-pill.red { background: rgba(239,68,68,0.1); color: var(--accent-red); border: 1px solid rgba(239,68,68,0.2); }
+
+        .status-badge { padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+        .status-active { background: rgba(16, 185, 129, 0.05); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-blocked { background: rgba(239, 68, 68, 0.1); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); animation: pulse-border 2s infinite; }
+        
+        .row-blocked td { background: rgba(239, 68, 68, 0.03) !important; border-color: rgba(239, 68, 68, 0.2); }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Radar Scanner Empty State */
+        .scanner-box { padding: 40px; text-align: center; color: var(--accent-purple); }
+        .scanner-icon { font-size: 2.5rem; animation: spin 4s linear infinite; margin-bottom: 15px; opacity: 0.8; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header"><i class="fa-solid fa-shield-halved logo-icon" style="color: var(--accent-purple);"></i><h2>NetSentinel</h2></div>
+            <nav class="sidebar-nav">
+                <p class="nav-label">Main Menu</p>
+                <a href="/dashboard" class="nav-item"><i class="fa-solid fa-table-columns"></i> Command Center</a>
+                <a href="/topology" class="nav-item"><i class="fa-solid fa-network-wired"></i> Network Topology</a>
+                <a href="/traffic" class="nav-item"><i class="fa-solid fa-wave-square"></i> Traffic Monitor</a>
+                <p class="nav-label">Security</p>
+                <a href="/alerts" class="nav-item"><i class="fa-solid fa-user-ninja"></i> IDS Alerts</a>
+                <a href="/ai-threat-engine" class="nav-item active" style="background: rgba(139, 92, 246, 0.1); border-right: 3px solid var(--accent-purple);"><i class="fa-solid fa-brain" style="color: var(--accent-purple);"></i> AI Threat Engine</a>
+                <a href="/firewall" class="nav-item"><i class="fa-solid fa-fire-extinguisher"></i> Firewall Rules</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search IP or Risk Profile..."></div>
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                    <div class="user-info"><span class="user-name">{{ username }}</span><span class="user-role">System Admin</span></div>
+                    <a href="/logout" class="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+                </div>
+            </header>
+
+            <div class="dashboard-content fade-in">
+                <div class="page-title">
+                    <h1><i class="fa-solid fa-brain" style="color: var(--accent-purple); margin-right: 12px; text-shadow: 0 0 20px rgba(139,92,246,0.4);"></i>Machine Learning Engine</h1>
+                    <p>Isolation Forest algorithm actively isolating and neutralizing network anomalies.</p>
+                </div>
+
+                <div class="table-section">
+                    <div class="panel-header"><h2>Live Threat Evaluation</h2></div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Source IP</th>
+                                    <th>Device Type</th>
+                                    <th>Traffic Volume</th>
+                                    <th>Port Variance</th>
+                                    <th>AI Risk Analysis</th>
+                                    <th>Defense Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ai-table-body">
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="scanner-box">
+                                            <i class="fa-solid fa-radar scanner-icon"></i>
+                                            <h3 style="margin: 0; color: var(--text-main); font-weight: 500;">Scanning Network Streams</h3>
+                                            <p style="color: var(--text-muted); font-size: 0.9rem;">Awaiting packet data from backend sniffer...</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        setInterval(() => {
+            fetch('/api/ai_risk')
+                .then(res => res.json())
+                .then(devices => {
+                    const tbody = document.getElementById('ai-table-body');
+                    if(devices.length === 0) return;
+                    
+                    tbody.innerHTML = '';
+                    devices.forEach(d => {
+                        let riskColor = 'green'; let barColor = 'bg-green';
+                        if(d.risk_level === 'Medium') { riskColor = 'yellow'; barColor = 'bg-yellow'; }
+                        if(d.risk_level === 'High') { riskColor = 'red'; barColor = 'bg-red'; }
+
+                        let statusHTML = '';
+                        let rowClass = '';
+                        if(d.status === 'Blocked') {
+                            statusHTML = `<span class="status-badge status-blocked"><i class="fa-solid fa-shield-virus"></i> Neutralized</span>`;
+                            rowClass = 'row-blocked';
+                        } else {
+                            statusHTML = `<span class="status-badge status-active"><i class="fa-solid fa-eye" style="opacity: 0.7;"></i> Observing</span>`;
+                        }
+
+                        tbody.innerHTML += `
+                            <tr class="${rowClass}">
+                                <td class="ip-text">${d.ip}</td>
+                                <td><span style="font-weight: 500;">${d.type}</span></td>
+                                <td>
+                                    <div class="mono-text" style="color: var(--text-main);">${d.packets} pkts</div>
+                                    <div class="mono-text" style="font-size: 0.8rem;">${d.avg_size} avg B</div>
+                                </td>
+                                <td>
+                                    <div class="mono-text" style="color: var(--text-main);">${d.ports}</div>
+                                    <div class="mono-text" style="font-size: 0.8rem;">unique</div>
+                                </td>
+                                <td>
+                                    <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                                        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; color: #fff;">${d.risk_score}%</span>
+                                        <span class="risk-pill ${riskColor}">${d.risk_level}</span>
+                                    </div>
+                                    <div class="risk-bar-container"><div class="risk-bar ${barColor}" style="width: ${d.risk_score}%"></div></div>
+                                </td>
+                                <td>${statusHTML}</td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => console.error("API sync error:", err));
+        }, 3000);
+    </script>
+</body>
+</html>

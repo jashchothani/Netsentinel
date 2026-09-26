@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Firewall Rules | NetSentinel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header"><i class="fa-solid fa-shield-halved logo-icon"></i><h2>NetSentinel</h2></div>
+            <nav class="sidebar-nav">
+                <p class="nav-label">Main Menu</p>
+                <a href="/dashboard" class="nav-item"><i class="fa-solid fa-table-columns"></i> Command Center</a>
+                <a href="/topology" class="nav-item"><i class="fa-solid fa-network-wired"></i> Network Topology</a>
+                <a href="/traffic" class="nav-item"><i class="fa-solid fa-wave-square"></i> Traffic Monitor</a>
+                <p class="nav-label">Security</p>
+                <a href="/ai-threat-engine" class="nav-item"><i class="fa-solid fa-brain"></i> AI Threat Engine</a>
+                <a href="/firewall" class="nav-item active"><i class="fa-solid fa-fire-extinguisher"></i> Firewall Rules</a>
+                <p class="nav-label">System</p>
+                <a href="/alerts" class="nav-item"><i class="fa-solid fa-file-shield"></i> Logs & Reports</a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i> Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search rules..."></div>
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                    <div class="user-info"><span class="user-name">{{ username }}</span><span class="user-role">System Admin</span></div>
+                    <a href="/logout" class="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+                </div>
+            </header>
+
+            <div class="dashboard-content fade-in">
+                <div class="page-title">
+                    <h1>Active Firewall Defense</h1>
+                    <p>Manage IP blocklists integrated directly with Windows Defender.</p>
+                </div>
+
+                <div class="panel-header" style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 30px;">
+                    <div>
+                        <h3 style="margin-bottom: 10px;"><i class="fa-solid fa-shield-virus" style="color: var(--accent-red); margin-right: 10px;"></i> Manually Block an IP</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Instantly drop all inbound packets from a specific host.</p>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <input type="text" id="manual-ip-input" placeholder="e.g. 192.168.1.50" style="padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); background: #0a0c10; color: white; width: 300px;">
+                        <button onclick="manualBlock()" class="export-btn" style="background: var(--accent-red); color: white; border: none;"><i class="fa-solid fa-ban"></i> Enforce Block</button>
+                    </div>
+                </div>
+
+                <div class="table-section">
+                    <div class="panel-header"><h2>Active Blacklist Rules</h2></div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Target IP Address</th>
+                                    <th>Date Blocked</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rules-table-body">
+                                <tr><td colspan="4" style="text-align: center; padding: 30px; color: var(--text-muted);">Loading firewall rules...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function loadFirewallRules() {
+            fetch('/api/firewall/rules')
+                .then(res => res.json())
+                .then(rules => {
+                    const tbody = document.getElementById('rules-table-body');
+                    
+                    if (rules.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--accent-green);"><i class="fa-solid fa-shield-check" style="font-size: 2rem; margin-bottom: 10px;"></i><br>No active blocks. All traffic permitted.</td></tr>`;
+                        return;
+                    }
+
+                    tbody.innerHTML = '';
+                    rules.forEach(rule => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td class="ip-text" style="color: var(--accent-red); font-weight: 700; font-size: 1.1rem;">${rule.ip_address}</td>
+                                <td class="mono-text" style="color: var(--text-muted);">${rule.timestamp}</td>
+                                <td><span class="status-dot red"></span> Traffic Dropped</td>
+                                <td>
+                                    <button onclick="unblockIP('${rule.ip_address}')" class="filter-btn" style="color: var(--text-main); border-color: var(--border-color);"><i class="fa-solid fa-unlock"></i> Unblock</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                });
+        }
+
+        function manualBlock() {
+            const ip = document.getElementById('manual-ip-input').value.trim();
+            if (!ip) return alert("Please enter an IP address to block.");
+            
+            fetch('/api/block', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ip: ip })
+            }).then(res => res.json()).then(data => {
+                if(data.success) {
+                    document.getElementById('manual-ip-input').value = '';
+                    loadFirewallRules();
+                } else {
+                    alert("Error: " + data.error);
+                }
+            });
+        }
+
+        function unblockIP(ip) {
+            if(confirm(`Are you sure you want to restore network access for ${ip}?`)) {
+                fetch('/api/firewall/unblock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip: ip })
+                }).then(res => res.json()).then(data => {
+                    if(data.success) loadFirewallRules();
+                    else alert("Error unblocking IP: " + data.error);
+                });
+            }
+        }
+
+        // Load rules on page load
+        document.addEventListener('DOMContentLoaded', loadFirewallRules);
+    </script>
+</body>
+</html>

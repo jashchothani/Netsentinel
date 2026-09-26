@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDS Alerts | NetSentinel</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    
+    <style>
+        .alert-row { transition: background 0.3s; }
+        .alert-row:hover { background: rgba(239, 68, 68, 0.05); }
+        .severity-high { color: var(--accent-red); font-weight: 700; background: rgba(239,68,68,0.1); padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; }
+        .severity-medium { color: #f59e0b; font-weight: 700; background: rgba(245,158,11,0.1); padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; }
+        .empty-alerts { text-align: center; padding: 60px; color: var(--text-muted); }
+        .empty-alerts i { font-size: 3rem; color: var(--accent-green); margin-bottom: 15px; opacity: 0.5; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-layout">
+        
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-shield-halved logo-icon"></i>
+                <h2>NetSentinel</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-label">Main Menu</p>
+                <a href="/dashboard" class="nav-item"><i class="fa-solid fa-table-columns"></i> Command Center</a>
+                <a href="/topology" class="nav-item"><i class="fa-solid fa-network-wired"></i> Network Topology</a>
+                <a href="/traffic" class="nav-item"><i class="fa-solid fa-wave-square"></i> Traffic Monitor</a>
+                
+                <p class="nav-label">Security</p>
+                <a href="/alerts" class="nav-item active"><i class="fa-solid fa-user-ninja"></i> IDS Alerts <span class="badge red" id="sidebar-alert-count">0</span></a>
+                
+                <a href="/ai-threat-engine" class="nav-item">
+                    <i class="fa-solid fa-brain"></i> AI Threat Engine 
+                    
+                </a>
+                <a href="/firewall" class="nav-item"><i class="fa-solid fa-fire-extinguisher"></i> Firewall Rules</a>
+                
+                <a href="#" class="nav-item"><i class="fa-solid fa-ban"></i> Device Control</a>
+
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search alerts...">
+                </div>
+                <a href="/alerts"><div class="user-profile">
+                    <div class="notifications">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="indicator"></span>
+                    </div></a>
+                <div class="user-profile">
+                    <div class="avatar"><i class="fa-solid fa-user-astronaut"></i></div>
+                    <div class="user-info">
+                        <span class="user-name">{{ username }}</span>
+                        <span class="user-role">user</span>
+                    </div>
+                    <a href="/logout" class="logout-btn" title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+                </div>
+            </header>
+
+            <div class="dashboard-content fade-in">
+                
+                <div class="page-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1>Intrusion Detection Log</h1>
+                        <p>Historical record of all detected security events and suspicious traffic.</p>
+                    </div>
+                    <button class="export-btn" onclick="clearAlerts()"><i class="fa-solid fa-trash-can"></i> Clear Logs</button>
+                </div>
+
+                <div class="table-section">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Severity</th>
+                                    <th>Threat Signature</th>
+                                    <th>Attacker IP</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="alerts-table-body">
+                                <tr>
+                                    <td colspan="6" class="empty-alerts">
+                                        <i class="fa-solid fa-shield-check"></i>
+                                        <h3>No Threats Detected</h3>
+                                        <p>Your network is currently secure. Listening for background anomalies...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function fetchHistoricalLogs() {
+            fetch('/api/logs')
+                .then(response => response.json())
+                .then(alerts => {
+                    const tableBody = document.getElementById('alerts-table-body');
+                    const badgeCount = document.getElementById('sidebar-alert-count');
+                    
+                    if (alerts.error) return;
+
+                    // Update sidebar count with the total number of logged alerts
+                    badgeCount.innerText = alerts.length;
+
+                    if (alerts.length === 0) {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="empty-alerts">
+                                    <i class="fa-solid fa-shield-check"></i>
+                                    <h3>No Threats Detected</h3>
+                                    <p>Your network is currently secure. Listening for background anomalies...</p>
+                                </td>
+                            </tr>
+                        `;
+                        return; 
+                    }
+
+                    // Clear the table and populate with historical DB logs
+                    tableBody.innerHTML = '';
+                    
+                    alerts.forEach(alert => {
+                        const sevClass = alert.severity.toLowerCase() === 'high' ? 'severity-high' : 'severity-medium';
+                        const icon = alert.message.includes("Port Scan") ? "fa-network-wired" : "fa-bolt";
+
+                        tableBody.innerHTML += `
+                            <tr class="alert-row">
+                                <td class="mono-text" style="color: var(--text-muted);">${alert.timestamp}</td>
+                                <td><span class="${sevClass}">${alert.severity}</span></td>
+                                <td style="font-weight: 500;"><i class="fa-solid ${icon}" style="margin-right: 8px; color: var(--text-muted);"></i> ${alert.message}</td>
+                                <td class="ip-text" style="color: var(--accent-red); font-weight: 600;">${alert.src_ip}</td>
+                                <td><span class="status-dot red"></span> Saved to DB</td>
+                                <td>
+                                    <button class="filter-btn red" onclick="blockHostIP('${alert.src_ip}')" style="font-size: 0.75rem; padding: 4px 10px;">
+    <i class="fa-solid fa-ban"></i> Block IP
+</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                })
+                .catch(err => console.error("Error fetching logs:", err));
+        }
+
+        // Fetch logs immediately, then check for new ones every 5 seconds
+        fetchHistoricalLogs();
+        setInterval(fetchHistoricalLogs, 5000);
+
+        // Real function to permanently delete the logs from the SQLite database
+        function clearAlerts() {
+            if(confirm("Are you sure you want to permanently delete all security logs?")) {
+                fetch('/api/clear_logs', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            fetchHistoricalLogs(); // Refresh the table
+                        }
+                    });
+            }
+        }
+        // --- FIREWALL BLOCK FUNCTION ---
+        function blockHostIP(ipAddress) {
+            // Confirm with the user before altering OS settings
+            if(confirm(`SECURITY WARNING:\n\nAre you sure you want to permanently block ${ipAddress} at the Windows Firewall level? All traffic from this IP will be dropped.`)) {
+                
+                fetch('/api/block', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ip: ipAddress }) // Send the IP to Python
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        alert(`Success! ${ipAddress} has been blocked by Windows Defender.`);
+                        fetchHistoricalLogs(); // Refresh the logs to show the new firewall action
+                    } else {
+                        alert(`Failed to block IP: ${data.error}\n\nMake sure your Flask server terminal is running as Administrator!`);
+                    }
+                })
+                .catch(err => {
+                    console.error("Firewall API Error:", err);
+                    alert("A network error occurred while contacting the firewall engine.");
+                });
+            }
+        }
+    </script>
+</body>
+</html>

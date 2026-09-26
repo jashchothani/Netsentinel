@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP | NetSentinel Security</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="login-body">
+
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <div class="login-container">
+        <a href="/login" class="back-link"><i class="fa-solid fa-arrow-left"></i> Cancel</a>
+
+        <div class="login-box fade-in-up">
+            <div class="login-header">
+                <div class="logo-icon"><i class="fa-solid fa-envelope-circle-check"></i></div>
+                <h2>Check Your Email</h2>
+                <p>We've sent a 6-digit verification code to your email address.</p>
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="flash-messages">
+                  {% for message in messages %}
+                    <p class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> {{ message }}</p>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="/verify_otp" class="login-form">
+                
+                <div class="input-group otp-group">
+                    <input type="text" id="otp" name="otp" required maxlength="6" pattern="\d{6}" autocomplete="off" class="otp-input" placeholder="------">
+                </div>
+
+                <button type="submit" class="btn btn-primary login-submit-btn">
+                    <span>Verify & Continue</span>
+                    <i class="fa-solid fa-shield-check"></i>
+                </button>
+            </form>
+            
+            <p class="signup-link">Didn't receive the code? <a href="/login">Restart Login</a></p>
+        </div>
+    </div>
+
+</body>
+</html>
